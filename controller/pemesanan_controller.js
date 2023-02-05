@@ -11,7 +11,7 @@ const sequelize = new Sequelize("hotel_ukk", "root", "", {
   dialect: "mysql",
 });
 
-//tambah peminjaman
+//tambah data
 exports.addPemesanan = async (request, response) => {
   let nomor_kamar = request.body.nomor_kamar;
   let room = await roomModel.findOne({
@@ -111,7 +111,7 @@ exports.addPemesanan = async (request, response) => {
   }
 };
 
-//update peminjaman
+//update data
 exports.updatePemesanan = async (request, response) => {
   let nomor_kamar = request.body.nomor_kamar;
   let room = await roomModel.findOne({
@@ -193,7 +193,7 @@ exports.updatePemesanan = async (request, response) => {
     });
 };
 
-//delete peminjaman
+//delete data
 exports.deletePemesanan = async (request, response) => {
   let pemesananID = request.params.id;
 
@@ -225,7 +225,7 @@ exports.deletePemesanan = async (request, response) => {
     });
 };
 
-//mendapatkan semua data peminjaman
+//mendapatkan semua data 
 exports.getAllPemesanan = async (request, response) => {
   const result = await sequelize.query(
     "SELECT pemesanans.id, pemesanans.nama_pemesanan,pemesanans.email_pemesanan,pemesanans.tgl_pemesanan,pemesanans.tgl_check_in,pemesanans.tgl_check_out,pemesanans.nama_tamu,pemesanans.jumlah_kamar,pemesanans.status_pemesanan, users.nama_user, tipe_kamars.nama_tipe_kamar, kamars.nomor_kamar FROM pemesanans JOIN tipe_kamars ON tipe_kamars.id = pemesanans.id_tipe_kamar JOIN users ON users.id=pemesanans.id_user JOIN detail_pemesanans ON detail_pemesanans.id_pemesanan=pemesanans.id JOIN kamars ON kamars.id=detail_pemesanans.id_kamar"
@@ -238,6 +238,7 @@ exports.getAllPemesanan = async (request, response) => {
   });
 };
 
+//mendapatkan salah satu data 
 exports.find = async (request, response) => {
   let memberID = request.params.id;
 

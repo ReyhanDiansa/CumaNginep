@@ -12,11 +12,13 @@ app.use(express.json())
 
 const userController = require("../controller/user_controller");
 // const upload = require('../controller/upload-cover');
+const auth = require(`../auth/auth`)
 
-app.get("/getAll", userController.getAllUser)
-app.post("/findOne", userController.findUser)
-app.post("/",userController.addUser)
-app.delete("/:id", userController.deleteUser)
-app.put("/:id", userController.updateUser)
+app.post("/login", userController.login)
+app.get("/getAll", auth.authVerify,userController.getAllUser)
+app.post("/findOne",auth.authVerify, userController.findUser)
+app.post("/", auth.authVerify, userController.addUser)
+app.delete("/:id",auth.authVerify, userController.deleteUser)
+app.put("/:id",auth.authVerify, userController.updateUser)
 
 module.exports=app

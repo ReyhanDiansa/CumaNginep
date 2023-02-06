@@ -12,11 +12,12 @@ app.use(express.json())
 
 const tipeController = require("../controller/tipe_kamar_controller");
 // const upload = require('../controller/upload-cover');
+const auth = require(`../auth/auth`)
 
-app.get("/getAll", tipeController.getAllType)
-app.post("/findOne", tipeController.findType)
-app.post("/",tipeController.addType)
-app.delete("/:id", tipeController.deleteType)
-app.put("/:id", tipeController.updateType)
+app.get("/getAll", auth.authVerify,tipeController.getAllType)
+app.post("/findOne", auth.authVerify,tipeController.findType)
+app.post("/", auth.authVerify,tipeController.addType)
+app.delete("/:id", auth.authVerify,tipeController.deleteType)
+app.put("/:id", auth.authVerify,tipeController.updateType)
 
 module.exports=app

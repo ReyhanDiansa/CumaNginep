@@ -12,12 +12,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const roomController = require("../controller/kamar_controller");
 // const upload = require('../controller/upload-cover');
+const auth = require(`../auth/auth`)
 
-app.get("/getAll", roomController.getAllRoom)
-app.post("/getAvailable", roomController.availableRoom)
-app.post("/findOne", roomController.findRoom)
-app.post("/",roomController.addRoom)
-app.delete("/:id", roomController.deleteRoom)
-app.put("/:id", roomController.updateRoom)
+app.get("/getAll", auth.authVerify,roomController.getAllRoom)
+app.post("/getAvailable", auth.authVerify,roomController.availableRoom)
+app.post("/findOne", auth.authVerify,roomController.findRoom)
+app.post("/", auth.authVerify,roomController.addRoom)
+app.delete("/:id",auth.authVerify, roomController.deleteRoom)
+app.put("/:id", auth.authVerify,roomController.updateRoom)
 
 module.exports=app

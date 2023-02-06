@@ -12,11 +12,12 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const pemesananController = require("../controller/pemesanan_controller")
 // const upload = require('../controller/upload-cover');
+const auth = require(`../auth/auth`)
 
-app.get("/getAll", pemesananController.getAllPemesanan)
-app.get("/findOne/:id", pemesananController.find)
-app.post("/",pemesananController.addPemesanan)
-app.delete("/:id", pemesananController.deletePemesanan)
-app.put("/:id", pemesananController.updatePemesanan)
+app.get("/getAll",auth.authVerify, pemesananController.getAllPemesanan)
+app.get("/findOne/:id",auth.authVerify, pemesananController.find)
+app.post("/",auth.authVerify,pemesananController.addPemesanan)
+app.delete("/:id", auth.authVerify,pemesananController.deletePemesanan)
+app.put("/:id", auth.authVerify,pemesananController.updatePemesanan)
 
 module.exports=app

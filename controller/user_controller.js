@@ -17,6 +17,52 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const jsonwebtoken = require("jsonwebtoken")
+const SECRET_KEY = "secretcode"
+
+
+exports.login = async (request,response) => {
+  try {
+      const params = {
+          email: request.body.email,
+          password: md5(request.body.password),
+      };
+
+      const findUser = await userModel.findOne({ where: params});
+      if (findUser == null) {
+          return response.status(404).json({
+              message: "email or password doesn't match",
+              err: error,
+          });
+      }
+      console.log(findUser)
+      //generate jwt token
+      let tokenPayLoad = {
+          id_user: findUser.id_costumer,
+          email: findUser.email,
+          role: findUser.role,
+      };
+      tokenPayLoad = JSON.stringify(tokenPayLoad);
+      let token = await jsonwebtoken.sign(tokenPayLoad,SECRET_KEY);
+
+      return response.status(200).json({
+          message: "Success login",
+          data:{
+              token: token,
+              id_user: findUser.id_user,
+              email: findUser.email,
+              role: findUser.role,
+          },
+      });
+  } catch (error){
+      console.log(error);
+      return response.status(500).json({
+          message: "Internal error",
+          err: error,
+      });
+  }
+};
+
 //mendaptkan semua data dalam tabel
 exports.getAllUser = async (request, response) => {
   let user = await userModel.findAll();

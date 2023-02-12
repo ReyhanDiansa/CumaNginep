@@ -2,6 +2,7 @@ const pemesananModel = require(`../models/index`).pemesanan;
 const detailsOfPemesananModel = require(`../models/index`).detail_pemesanan;
 const userModel = require(`../models/index`).user;
 const roomModel = require(`../models/index`).kamar;
+const moment = require("moment");
 
 const Op = require(`sequelize`).Op;
 // const date = require(`date-and-time`);
@@ -74,28 +75,56 @@ exports.addPemesanan = async (request, response) => {
             detailsOfPemesanan[i].id_pemesanan = pemesananID;
           }
 
-          let newDetail = {
-            id_pemesanan: pemesananID,
-            id_kamar: room.id,
-            tgl_akses: result.tgl_check_in,
-            harga: detailsOfPemesanan[0].harga,
-          };
+          let tgl1 = new Date(request.body.check_in);
+          let tgl2 = new Date(request.body.check_out);
+          let checkIn = moment(tgl1).format("YYYY-MM-DD");
+          let checkOut = moment(tgl2).format("YYYY-MM-DD");
 
-          detailsOfPemesananModel
-            .create(newDetail)
-            .then((result) => {
-              return response.json({
-                success: true,
-                message: `New transaction has been inserted`,
+          // check if the dates are valid
+          if (
+            !moment(checkIn, "YYYY-MM-DD").isValid() ||
+            !moment(checkOut, "YYYY-MM-DD").isValid()
+          ) {
+            return response
+              .status(400)
+              .send({ message: "Invalid date format" });
+          }
+
+          let success = true;
+          let message = '';
+          
+          for (
+            let m = moment(checkIn, "YYYY-MM-DD");
+            m.isBefore(checkOut);
+            m.add(1, "days")
+          ) {
+            let date = m.format("YYYY-MM-DD");
+            let newDetail = {
+              id_pemesanan: pemesananID,
+              id_kamar: room.id,
+              tgl_akses: date,
+              harga: detailsOfPemesanan[0].harga,
+            };
+            detailsOfPemesananModel
+              .create(newDetail)
+              .catch((error) => {
+                success = false;
+                message = error.message;
               });
-            })
-            .catch((error) => {
-              return response.json({
-                success: false,
-                message: error.message,
-              });
+          }
+          
+          if (success) {
+            return response.json({
+              success: true,
+              message: `New transactions have been inserted`,
             });
-        })
+          } else {
+            return response.json({
+              success: false,
+              message: message,
+            });
+          }
+    })          
         .catch((error) => {
           return response.json({
             success: false,
@@ -163,28 +192,56 @@ exports.updatePemesanan = async (request, response) => {
         detailsOfPemesanan[i].id_pemesanan = pemesananID;
       }
 
-      let newDetail = {
-        id_pemesanan: pemesananID,
-        id_kamar: room.id,
-        tgl_akses: detailsOfPemesanan[0].tgl_akses,
-        harga: detailsOfPemesanan[0].harga,
-      };
+      let tgl1 = new Date(request.body.check_in);
+      let tgl2 = new Date(request.body.check_out);
+      let checkIn = moment(tgl1).format("YYYY-MM-DD");
+      let checkOut = moment(tgl2).format("YYYY-MM-DD");
 
-      detailsOfPemesananModel
-        .create(newDetail)
-        .then((result) => {
-          return response.json({
-            success: true,
-            message: ` transaction has been update`,
+      // check if the dates are valid
+      if (
+        !moment(checkIn, "YYYY-MM-DD").isValid() ||
+        !moment(checkOut, "YYYY-MM-DD").isValid()
+      ) {
+        return response
+          .status(400)
+          .send({ message: "Invalid date format" });
+      }
+
+      let success = true;
+      let message = '';
+      
+      for (
+        let m = moment(checkIn, "YYYY-MM-DD");
+        m.isBefore(checkOut);
+        m.add(1, "days")
+      ) {
+        let date = m.format("YYYY-MM-DD");
+        let newDetail = {
+          id_pemesanan: pemesananID,
+          id_kamar: room.id,
+          tgl_akses: date,
+          harga: detailsOfPemesanan[0].harga,
+        };
+        detailsOfPemesananModel
+          .create(newDetail)
+          .catch((error) => {
+            success = false;
+            message = error.message;
           });
-        })
-        .catch((error) => {
-          return response.json({
-            success: false,
-            message: error.message,
-          });
+      }
+      
+      if (success) {
+        return response.json({
+          success: true,
+          message: `New transactions have been inserted`,
         });
-    })
+      } else {
+        return response.json({
+          success: false,
+          message: message,
+        });
+      }
+})          
     .catch((error) => {
       return response.json({
         success: false,
@@ -225,7 +282,7 @@ exports.deletePemesanan = async (request, response) => {
     });
 };
 
-//mendapatkan semua data 
+//mendapatkan semua data
 exports.getAllPemesanan = async (request, response) => {
   const result = await sequelize.query(
     "SELECT pemesanans.id, pemesanans.nama_pemesanan,pemesanans.email_pemesanan,pemesanans.tgl_pemesanan,pemesanans.tgl_check_in,pemesanans.tgl_check_out,pemesanans.nama_tamu,pemesanans.jumlah_kamar,pemesanans.status_pemesanan, users.nama_user, tipe_kamars.nama_tipe_kamar, kamars.nomor_kamar FROM pemesanans JOIN tipe_kamars ON tipe_kamars.id = pemesanans.id_tipe_kamar JOIN users ON users.id=pemesanans.id_user JOIN detail_pemesanans ON detail_pemesanans.id_pemesanan=pemesanans.id JOIN kamars ON kamars.id=detail_pemesanans.id_kamar"
@@ -238,7 +295,7 @@ exports.getAllPemesanan = async (request, response) => {
   });
 };
 
-//mendapatkan salah satu data 
+//mendapatkan salah satu data
 exports.find = async (request, response) => {
   let memberID = request.params.id;
 

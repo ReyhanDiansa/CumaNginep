@@ -141,11 +141,13 @@ exports.deleteRoom = (request, response) => {
 };
 
 exports.availableRoom = async (request, response) => {
-  const tgl_akses_satu = request.body.tgl_akses_satu;
-  const tgl_akses_dua = request.body.tgl_akses_dua;
+  const tgl_akses_satu = new Date (request.body.tgl_akses_satu);
+  const tgl_akses_dua = new Date (request.body.tgl_akses_dua);
+  let tgl1 = moment(tgl_akses_satu).format("YYYY-MM-DD");
+  let tgl2 = moment(tgl_akses_dua).format("YYYY-MM-DD");
 
   const result = await sequelize.query(
-    `SELECT tipe_kamars.nama_tipe_kamar, kamars.nomor_kamar FROM kamars LEFT JOIN tipe_kamars ON kamars.id_tipe_kamar = tipe_kamars.id LEFT JOIN detail_pemesanans ON detail_pemesanans.id_kamar = kamars.id WHERE kamars.id NOT IN (SELECT id_kamar from detail_pemesanans WHERE tgl_akses BETWEEN '${tgl_akses_satu}' AND '${tgl_akses_dua}')`
+    `SELECT tipe_kamars.nama_tipe_kamar, kamars.nomor_kamar FROM kamars LEFT JOIN tipe_kamars ON kamars.id_tipe_kamar = tipe_kamars.id LEFT JOIN detail_pemesanans ON detail_pemesanans.id_kamar = kamars.id WHERE kamars.id NOT IN (SELECT id_kamar from detail_pemesanans WHERE tgl_akses BETWEEN '${tgl1}' AND '${tgl2}') GROUP BY kamars.nomor_kamar`
   );
 
   return response.json({

@@ -38,7 +38,7 @@ exports.login = async (request,response) => {
       console.log(findUser)
       //generate jwt token
       let tokenPayLoad = {
-          id_user: findUser.id_costumer,
+          id_user: findUser.id_user,
           email: findUser.email,
           role: findUser.role,
       };

@@ -26,6 +26,13 @@ exports.getAllRoom = async (request, response) => {
     "SELECT kamars.id,kamars.nomor_kamar,tipe_kamars.nama_tipe_kamar FROM kamars JOIN tipe_kamars ON tipe_kamars.id = kamars.id_tipe_kamar ORDER BY kamars.id ASC"
   );
 
+  console.log(result);
+  if (result[0].length === 0) {
+    return response.json({
+      success: false,
+      message: "nothing kamar to show",
+    });
+  }
   response.json(result[0]);
 };
 
@@ -36,6 +43,13 @@ exports.findRoom = async (request, response) => {
   const result = await sequelize.query(
     `SELECT kamars.id,kamars.nomor_kamar,tipe_kamars.nama_tipe_kamar FROM kamars JOIN tipe_kamars ON tipe_kamars.id = kamars.id_tipe_kamar where kamars.nomor_kamar= ${nomor_kamar} ORDER BY kamars.id ASC `
   );
+  if (result[0].length === 0) {
+    return response.json({
+      success: false,
+      message: "nothing kamar to show",
+    });
+  }
+
   return response.json({
     success: true,
     data: result[0],
@@ -63,13 +77,36 @@ exports.addRoom = async (request, response) => {
       nomor_kamar: request.body.nomor_kamar,
       id_tipe_kamar: tipeId.id,
     };
+
+    if (newRoom.nomor_kamar === "" || nama_tipe_kamar === "") {
+      return response.json({
+        success: false,
+        message: `Mohon diisi semua`,
+      });
+    }
+
+    let kamars = await roomModel.findAll({
+      where: {
+        [Op.and]: [
+          { nomor_kamar: newRoom.nomor_kamar },
+          { id_tipe_kamar: newRoom.id_tipe_kamar },
+        ],
+      },
+      attributes: ["id", "nomor_kamar", "id_tipe_kamar"],
+    });
+    if (kamars.length > 0) {
+      return response.json({
+        success: false,
+        message: `Kamar yang anda inputkan sudah ada`,
+      });
+    }
     roomModel
       .create(newRoom)
       .then((result) => {
         return response.json({
           success: true,
           data: result,
-          message: `New Member has been inserted`,
+          message: `New Room has been inserted`,
         });
       })
       .catch((error) => {
@@ -101,8 +138,48 @@ exports.updateRoom = async (request, response) => {
       nomor_kamar: request.body.nomor_kamar,
       id_tipe_kamar: tipeId.id,
     };
+    if (newRoom.nomor_kamar === "" || dataUser.nama_tipe_kamar === "") {
+      return response.json({
+        success: false,
+        message:
+          "Harus diisi semua kalau tidak ingin merubah, isi dengan value sebelumnya",
+      });
+    }
 
     let idRoom = request.params.id;
+    let getId = await roomModel.findAll({
+      where: {
+        [Op.and]: [{ id: idRoom }],
+      },
+    });
+    if (getId.length === 0) {
+      return response.json({
+        success: false,
+        message: "Kamar dengan id tersebut tidak ada",
+      });
+    }
+
+    let kamars = await roomModel.findAll({
+      where: {
+        [Op.and]: [
+          { id: { [Op.ne]: idRoom } },
+          {
+            [Op.or]: [
+              { nomor_kamar: newRoom.nomor_kamar },
+              { id_tipe_kamar: newRoom.id_tipe_kamar },
+            ],
+          },
+        ],
+      },
+      attributes: ["id", "nomor_kamar", "id_tipe_kamar"],
+    });
+    if (kamars.length > 0) {
+      return response.json({
+        success: false,
+        message: `Kamar yang anda inputkan sudah ada`,
+      });
+    }
+    
     roomModel
       .update(newRoom, { where: { id: idRoom } })
       .then((result) => {
@@ -121,8 +198,19 @@ exports.updateRoom = async (request, response) => {
 };
 
 //mengahapus salah satu data
-exports.deleteRoom = (request, response) => {
+exports.deleteRoom = async (request, response) => {
   let idRoom = request.params.id;
+
+  const room = await roomModel.findAll({
+    where: { [Op.and]: [{ id: idRoom }] },
+  });
+
+  if (room.length === 0) {
+    return response.json({
+      success: false,
+      message: `Tidak ada kamar dengan id tersebut`,
+    });
+  }
 
   roomModel
     .destroy({ where: { id: idRoom } })
@@ -141,14 +229,21 @@ exports.deleteRoom = (request, response) => {
 };
 
 exports.availableRoom = async (request, response) => {
-  const tgl_akses_satu = new Date (request.body.tgl_akses_satu);
-  const tgl_akses_dua = new Date (request.body.tgl_akses_dua);
+  const tgl_akses_satu = new Date(request.body.tgl_akses_satu);
+  const tgl_akses_dua = new Date(request.body.tgl_akses_dua);
   let tgl1 = moment(tgl_akses_satu).format("YYYY-MM-DD");
   let tgl2 = moment(tgl_akses_dua).format("YYYY-MM-DD");
 
   const result = await sequelize.query(
     `SELECT tipe_kamars.nama_tipe_kamar, kamars.nomor_kamar FROM kamars LEFT JOIN tipe_kamars ON kamars.id_tipe_kamar = tipe_kamars.id LEFT JOIN detail_pemesanans ON detail_pemesanans.id_kamar = kamars.id WHERE kamars.id NOT IN (SELECT id_kamar from detail_pemesanans WHERE tgl_akses BETWEEN '${tgl1}' AND '${tgl2}') GROUP BY kamars.nomor_kamar`
   );
+
+  if (result[0].length === 0) {
+    return response.json({
+      success: false,
+      message: `Tidak ada kamar yang tersedia di antara tanggal itu`,
+    });
+  }
 
   return response.json({
     success: true,

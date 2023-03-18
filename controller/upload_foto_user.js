@@ -3,6 +3,10 @@ const path = require(`path`)
 const express = require(`express`)
 const app = express()
 const fs = require(`fs`)
+const userModel = require(`../models/index`).user;
+const randomstring = require("randomstring");
+
+
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
@@ -24,8 +28,25 @@ const storage = multer.diskStorage({
     },
 
     filename: (req, file, cb) => {
-        cb(null, file.originalname)
+      const getFilenames = () => {
+        return userModel.findAll().then((user) => {
+          return user.map((t) => t.foto);
+        });
+      };
+    
+      const random = randomstring.generate(7);
+      const extension = path.extname(file.originalname);
+      const filename = path.basename(file.originalname, extension);
+    
+      getFilenames().then((filenames) => {
+        let newFilename = `${filename}_${random}${extension}`;
+        while (filenames.includes(newFilename)) {
+          newFilename = `${filename}_${randomstring.generate(7)}${extension}`;
+        }
+        cb(null, newFilename);
+      });
     }
+    
 })
 
 

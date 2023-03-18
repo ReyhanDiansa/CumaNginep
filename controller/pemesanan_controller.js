@@ -2,7 +2,9 @@ const pemesananModel = require(`../models/index`).pemesanan;
 const detailsOfPemesananModel = require(`../models/index`).detail_pemesanan;
 const userModel = require(`../models/index`).user;
 const roomModel = require(`../models/index`).kamar;
+const { request } = require("express");
 const moment = require("moment");
+const randomstring = require("randomstring");
 
 const Op = require(`sequelize`).Op;
 // const date = require(`date-and-time`);
@@ -46,22 +48,38 @@ exports.addPemesanan = async (request, response) => {
       message: `User yang anda inputkan tidak ada`,
     });
   } else {
+    let date = moment();
+    let tgl_pemesanan = date.format("DD-MM-YYYY");
+    const random = randomstring.generate(7);
+    let nomorPem = `${tgl_pemesanan}_${random}`;
+    console.log(tgl_pemesanan);
+
     let newData = {
-      nomor_pemesanan: request.body.nomor_pemesanan,
+      nomor_pemesanan: nomorPem,
       nama_pemesanan: request.body.nama_pemesanan,
       email_pemesanan: request.body.email_pemesanan,
-      tgl_pemesanan: request.body.tanggal_pemesanan,
+      tgl_pemesanan: tgl_pemesanan,
       tgl_check_in: request.body.check_in,
       tgl_check_out: request.body.check_out,
       nama_tamu: request.body.nama_tamu,
-      jumlah_kamar: request.body.jumlah_kamar,
+      jumlah_kamar: 1,
       id_tipe_kamar: room.id_tipe_kamar,
       status_pemesanan: request.body.status,
       id_user: userId.id,
     };
 
+    for (const [key, value] of Object.entries(newData)) {
+      if (!value || value === "") {
+        console.log(`Error: ${key} is empty`);
+        // Handle the error here, for example by sending an error response
+        return response
+          .status(400)
+          .json({ error: `${key} kosong mohon di isi` });
+      }
+    }
+
     let roomCheck = await sequelize.query(
-      `SELECT * FROM detail_pemesanans WHERE id_kamar = ${room.id} AND tgl_akses= "${request.body.check_in}" ;`
+      `SELECT * FROM detail_pemesanans WHERE id_kamar = ${room.id} AND tgl_akses BETWEEN '${newData.tgl_check_in}' AND '${newData.tgl_check_out}'`
     );
 
     if (roomCheck[0].length === 0) {
@@ -91,8 +109,8 @@ exports.addPemesanan = async (request, response) => {
           }
 
           let success = true;
-          let message = '';
-          
+          let message = "";
+
           for (
             let m = moment(checkIn, "YYYY-MM-DD");
             m.isBefore(checkOut);
@@ -105,14 +123,12 @@ exports.addPemesanan = async (request, response) => {
               tgl_akses: date,
               harga: detailsOfPemesanan[0].harga,
             };
-            detailsOfPemesananModel
-              .create(newDetail)
-              .catch((error) => {
-                success = false;
-                message = error.message;
-              });
+            detailsOfPemesananModel.create(newDetail).catch((error) => {
+              success = false;
+              message = error.message;
+            });
           }
-          
+
           if (success) {
             return response.json({
               success: true,
@@ -124,7 +140,7 @@ exports.addPemesanan = async (request, response) => {
               message: message,
             });
           }
-    })          
+        })
         .catch((error) => {
           return response.json({
             success: false,
@@ -177,7 +193,40 @@ exports.updatePemesanan = async (request, response) => {
     id_user: userId.id,
   };
 
+  for (const [key, value] of Object.entries(newData)) {
+    if (!value || value === "") {
+      console.log(`Error: ${key} is empty`);
+      // Handle the error here, for example by sending an error response
+      return response
+        .status(400)
+        .json({
+          error: `${key} kosong Harus diisi kalau tidak ingin merubah, isi dengan value sebelumnya`,
+        });
+    }
+  }
+
   let pemesananID = request.params.id;
+  let getId = await pemesananModel.findAll({
+    where: {
+      [Op.and]: [{ id: pemesananID }],
+    },
+  });
+  if (getId.length === 0) {
+    return response.json({
+      success: false,
+      message: "Transaksi dengan id tersebut tidak ada",
+    });
+  }
+  let roomCheck = await sequelize.query(
+    `SELECT * FROM detail_pemesanans WHERE id_kamar = ${room.id} AND id_pemesanan != ${pemesananID} AND tgl_akses BETWEEN '${newData.tgl_check_in}' AND '${newData.tgl_check_out}" ;`
+  );
+
+  if (roomCheck[0].length > 0) {
+    return response.json({
+      success: false,
+      message: `Kamar yang anda pesan sudah di booking`,
+    });
+  }
 
   pemesananModel
     .update(newData, { where: { id: pemesananID } })
@@ -202,14 +251,12 @@ exports.updatePemesanan = async (request, response) => {
         !moment(checkIn, "YYYY-MM-DD").isValid() ||
         !moment(checkOut, "YYYY-MM-DD").isValid()
       ) {
-        return response
-          .status(400)
-          .send({ message: "Invalid date format" });
+        return response.status(400).send({ message: "Invalid date format" });
       }
 
       let success = true;
-      let message = '';
-      
+      let message = "";
+
       for (
         let m = moment(checkIn, "YYYY-MM-DD");
         m.isBefore(checkOut);
@@ -222,14 +269,12 @@ exports.updatePemesanan = async (request, response) => {
           tgl_akses: date,
           harga: detailsOfPemesanan[0].harga,
         };
-        detailsOfPemesananModel
-          .create(newDetail)
-          .catch((error) => {
-            success = false;
-            message = error.message;
-          });
+        detailsOfPemesananModel.create(newDetail).catch((error) => {
+          success = false;
+          message = error.message;
+        });
       }
-      
+
       if (success) {
         return response.json({
           success: true,
@@ -241,7 +286,7 @@ exports.updatePemesanan = async (request, response) => {
           message: message,
         });
       }
-})          
+    })
     .catch((error) => {
       return response.json({
         success: false,
@@ -253,6 +298,17 @@ exports.updatePemesanan = async (request, response) => {
 //delete data
 exports.deletePemesanan = async (request, response) => {
   let pemesananID = request.params.id;
+  let getId = await pemesananModel.findAll({
+    where: {
+      [Op.and]: [{ id: pemesananID }],
+    },
+  });
+  if (getId.length === 0) {
+    return response.json({
+      success: false,
+      message: "Transaksi dengan id tersebut tidak ada",
+    });
+  }
 
   detailsOfPemesananModel
     .destroy({
@@ -287,6 +343,12 @@ exports.getAllPemesanan = async (request, response) => {
   const result = await sequelize.query(
     "SELECT pemesanans.id, pemesanans.nama_pemesanan,pemesanans.email_pemesanan,pemesanans.tgl_pemesanan,pemesanans.tgl_check_in,pemesanans.tgl_check_out,pemesanans.nama_tamu,pemesanans.jumlah_kamar,pemesanans.status_pemesanan, users.nama_user, tipe_kamars.nama_tipe_kamar, kamars.nomor_kamar FROM pemesanans JOIN tipe_kamars ON tipe_kamars.id = pemesanans.id_tipe_kamar JOIN users ON users.id=pemesanans.id_user JOIN detail_pemesanans ON detail_pemesanans.id_pemesanan=pemesanans.id JOIN kamars ON kamars.id=detail_pemesanans.id_kamar"
   );
+  if (result[0].length === 0) {
+    return response.json({
+      success: false,
+      message: "nothing transaksi to show",
+    });
+  }
 
   response.json({
     success: true,
@@ -302,6 +364,13 @@ exports.find = async (request, response) => {
   const result = await sequelize.query(
     `SELECT pemesanans.id, pemesanans.nama_pemesanan,pemesanans.email_pemesanan,pemesanans.tgl_pemesanan,pemesanans.tgl_check_in,pemesanans.tgl_check_out,pemesanans.nama_tamu,pemesanans.jumlah_kamar,pemesanans.status_pemesanan, users.nama_user, tipe_kamars.nama_tipe_kamar, kamars.nomor_kamar FROM pemesanans JOIN tipe_kamars ON tipe_kamars.id = pemesanans.id_tipe_kamar JOIN users ON users.id=pemesanans.id_user JOIN detail_pemesanans ON detail_pemesanans.id_pemesanan=pemesanans.id JOIN kamars ON kamars.id=detail_pemesanans.id_kamar WHERE pemesanans.id=${memberID}`
   );
+
+  if (result[0].length === 0) {
+    return response.json({
+      success: false,
+      message: "nothing transaction to show",
+    });
+  }
 
   return response.json({
     success: true,

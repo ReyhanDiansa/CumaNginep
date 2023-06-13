@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+.note_wrapper{
+  width: 100%;
+  margin: 0 5rem 1rem 5rem;
+}
+.note_container {
+  margin: 0 auto;
+  width: 210mm;
+  height: auto;
+}
+
+.note {
+  background-color: #024f79;
+  padding-bottom: 0.5rem;
+}
+
+.note_title {
+  background-image: url("/invoice_bg.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  height: 20vh;
+  color: white;
+}
+
+.title_info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.logo {
+  margin: 3rem 3rem;
+}
+
+.logo img {
+  aspect-ratio: 3/2;
+  object-fit: contain;
+}
+
+.tgl_pesan {
+  text-align: end;
+  margin: 1.5rem 3rem;
+}
+
+.tgl_akses {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  margin-right: 3rem;
+}
+
+.checkin p {
+  font-size: small;
+}
+
+.checkout p {
+  font-size: small;
+}
+
+.note_body {
+  background-color: white;
+  width: 98%;
+  margin: 0 auto 0 auto;
+  padding-bottom: 0.1rem;
+}
+
+.header_body {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 1rem;
+  padding-top: 2rem;
+}
+
+.invoice_title {
+  text-align: center;
+  color: black;
+}
+
+.kepada {
+  color: black;
+}
+
+.kepada h4 {
+  font-size: small;
+}
+
+.invoice_title h1 {
+  color: #024f79;
+}
+
+.layanan_title {
+  color: #024f79;
+  margin: 2rem 1rem 1rem 1rem;
+  font-size: xx-large;
+}
+
+.invoice_body table {
+  border-collapse: collapse;
+  width: 97%;
+  margin: 0 auto;
+  text-align: center;
+  color: black;
+}
+
+.invoice_body table thead th {
+  border-bottom: 5px solid #024f79;
+  padding: 0 0 10px 0;
+}
+
+.invoice_body table tbody tr td {
+  padding: 20px 0 30px 0;
+  border-bottom: 5px solid #024f79;
+}
+
+.table2 tbody td:nth-child(4) {
+  width: 20%;
+}
+
+.bayar {
+  margin: 2rem  2rem 5rem 2rem;
+  display: flex;
+  justify-content: end;
+  color: #024f79;
+
+}
+
+.bayar_info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bayar h2 {
+  margin-top: 2rem;
+}
+
+.thanks h2{
+  color: white;
+  font-family: 'Dancing Script', cursive;
+  font-size: xx-large;
+  text-align: center;
+  margin: 1rem 0 1rem 0;
+}
+
+.thanks hr{
+  width: 30%;
+  margin: auto;
+  border: 1px solid white;
+}
+
+
+

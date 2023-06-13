@@ -1,0 +1,28 @@
+.custom-select-border .MuiOutlinedInput-notchedOutline {
+    border-color: #ff0000;
+  }
+
+  .detail_spec {
+    background-color: white;
+    height: 300px;
+    margin: auto;
+    overflow-y: scroll;
+  }
+
+  
+  .detail_spec td {
+    font-weight: initial;
+    font-family: var(--font-lato);
+  }
+  
+  .detail_spec table {
+    margin: 1rem auto;
+  }
+  
+  .detail_spec table tbody td {
+    padding: 1rem;
+  }
+  .detail_spec table tbody td span {
+   font-size:medium ;
+   font-weight: bold;
+  }

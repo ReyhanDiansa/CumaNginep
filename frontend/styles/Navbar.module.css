@@ -1,0 +1,109 @@
+.toggle {
+  color: black;
+  margin: 1.7rem 2rem;
+  font-size: large;
+  cursor: pointer;
+}
+
+.side_active {
+  background-color: #024f795d;
+}
+
+.nav_link:hover {
+  background-color: #024f7941;
+}
+
+.navbar_container {
+  display: flex;
+  position: fixed;
+  width: 100%;
+  justify-content: space-between;
+  background-color: white;
+  z-index: 99;
+}
+
+.navbar_logo {
+  margin: 1rem 3rem;
+}
+
+.navbar_logo img {
+  object-fit: contain;
+  height: 3rem;
+}
+
+.link_container {
+  display: flex;
+  gap: 5rem;
+}
+
+.link_container a {
+  margin: 2rem 0;
+}
+
+.logout {
+  background-color: #024f79;
+  border-radius: 2rem;
+  border: none;
+  padding: 14px 2rem;
+  color: white;
+  height: max-content;
+  margin: 1.3rem 4rem 0 0;
+  cursor: pointer;
+}
+
+.bars_icon {
+  margin: 1.8rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.sidebar_container {
+  background-color: #024f795d;
+  width: 50%;
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+  color: white;
+  position: fixed;
+  right: 0;
+  margin-top: 4rem;
+  float: right;
+}
+
+.logout_sidebar {
+  background-color: #024f79;
+  border-radius: 2rem;
+  border: none;
+  padding: 14px 2rem;
+  color: white;
+  height: max-content;
+  margin: 1rem 4rem 0 0;
+  cursor: pointer;
+  margin: auto;
+}
+
+@media (min-width: 600px) and (max-width: 1024px) {
+  .navbar_logo img {
+    object-fit: contain;
+    width: 80%;
+  }
+  .link_container {
+    gap: 3rem;
+  }
+  .logout {
+    margin: 1rem 2.5rem 0 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar_logo img {
+    object-fit: contain;
+    width: 100px;
+  }
+  .navbar_logo {
+    margin: 1rem 1.5rem;
+  }
+}

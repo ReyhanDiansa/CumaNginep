@@ -245,40 +245,13 @@ const index = () => {
     }),
   };
 
-  const MyDrawer = () => {
-    const toggle = () => {
-      setOpen(!open);
-      router.push("/resepsionis/transaction");
-    };
-
-    return (
-      <Drawers open={open} onRequestClose={toggle}>
-        <div
-          style={{
-            backgroundColor: "#fff",
-            width: "20rem",
-            textAlign: "center",
-          }}
-        >
-          <h3>Berhasil Memesan</h3>
-          <h4>Kamar</h4>
-          <h1>{hasilInsert.nomor_kamar}</h1>
-          <h5 style={{ marginBottom: "1rem" }}>
-            {hasilInsert.nama_tipe_kamar}
-          </h5>
-          <p>Lihat detail pesanan di bagian transaksi</p>
-        </div>
-      </Drawers>
-    );
-  };
-
   const handleClose = () => {
     setIsShow(false);
   };
 
   return (
     <>
-      <MyDrawer />
+      {/* <MyDrawer /> */}
       <Snackbar open={isShow} autoHideDuration={6000} onClose={handleClose}>
         <MuiAlert
           elevation={6}
@@ -295,71 +268,6 @@ const index = () => {
       <div>
         <>
           <div className={styles.form_container2}>
-            <div className={`${styles.form__group} ${styles.field}`}>
-              <input
-                type="input"
-                className={styles.form__field}
-                placeholder="Nama Pemesan"
-                required=""
-                value={nama_pemesan}
-                onChange={(e) => setNamaPemesan(e.target.value)}
-              />
-              <label for="name" className={styles.form__label}>
-                Nama Pemesan
-              </label>
-            </div>
-            <div className={`${styles.form__group} ${styles.field}`}>
-              <input
-                type="email"
-                className={styles.form__field}
-                placeholder="Email Pemesan"
-                required=""
-                value={email}
-                onChange={(e) => setEmailPemesan(e.target.value)}
-              />
-              <label for="email" className={styles.form__label}>
-                Email Pemesan
-              </label>
-            </div>
-            <div className={`${styles.form__group} ${styles.field}`}>
-              <input
-                type="text"
-                className={styles.form__field}
-                placeholder="Nama Tamu"
-                required=""
-                value={nama_tamu}
-                onChange={(e) => setNamaTamu(e.target.value)}
-              />
-              <label for="nama_tamu" className={styles.form__label}>
-                Nama Tamu
-              </label>
-            </div>
-            <div className={`${styles.form__group} ${styles.field}`}>
-              <input
-                type="date"
-                className={styles.form__field}
-                placeholder="Tanggal CheckIn"
-                required=""
-                onChange={(e) => handleDateInChange(e.target.value)}
-                value={check_in}
-              />
-              <label for="checkin" className={styles.form__label}>
-                Tanggal CheckIn
-              </label>
-            </div>
-            <div className={`${styles.form__group} ${styles.field}`}>
-              <input
-                type="date"
-                className={styles.form__field}
-                placeholder="Tanggal CheckOut"
-                required=""
-                value={check_out}
-                onChange={(e) => handleDateOutChange(e.target.value)}
-              />
-              <label for="checkout" className={styles.form__label}>
-                Tanggal CheckOut
-              </label>
-            </div>
             <div className={styles.select}>
               <Select
                 id="my-select"
@@ -368,26 +276,6 @@ const index = () => {
                 placeholder="Status"
                 value={defaultValue[0]}
                 onChange={(e) => setStatus(e.value)}
-              />
-            </div>
-            <div className={styles.select}>
-              <Select
-                id="my-select"
-                options={optionType}
-                styles={customStyles}
-                placeholder="Tipe Kamar"
-                value={defaultValue[2]}
-                onChange={(e) => setTipeKamar(e.value)}
-              />
-            </div>
-            <div className={styles.select}>
-              <Select
-                id="my-select"
-                options={Array.isArray(optionRoom) ? optionRoom : []}
-                styles={customStyles}
-                value={defaultValue[1]}
-                onChange={(e) => setRoom(e.value)}
-                placeholder="Nomor Kamar"
               />
             </div>
             <br />

@@ -10,9 +10,9 @@ const Navbar = () => {
   const [iconToggle, setIconToggle] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const link = [
-    { name: "Home", link: "/resepsionis/" },
-    { name: "Transaction", link: "/resepsionis/transaction" },
-    { name: "Booking", link: "/resepsionis/booking" },
+    { name: "Home", link: "/resepsionis/", as:"/resepsionis" },
+    { name: "Transaction", link: "/resepsionis/transaction", as:["/resepsionis/transaction","/resepsionis/NotaTransaksi"] },
+    // { name: "Booking", link: "/resepsionis/booking", as:"/resepsionis/booking" },
   ];
 
   const router = useRouter();
@@ -43,6 +43,17 @@ const Navbar = () => {
     setIsOpen(!isOpen);
   };
 
+  const ActiveLink = ({ href, asPaths, children }) => {
+    const router = useRouter();
+    const isActive = [asPaths].some((path) => router.pathname === path);
+  
+    return (
+      <Link href={href} className={isActive ? styles.active : ""}>
+        {children}
+      </Link>
+    );
+  };
+
   return (
     <>
       <div className={styles.navbar_container}>
@@ -58,9 +69,9 @@ const Navbar = () => {
           {!iconToggle ? (
             <>
               {link.map((item, index) => (
-                <Link key={index} href={item.link}>
-                  {item.name}
-                </Link>
+                <ActiveLink key={index} href={item.link} asPaths={item.as}>
+                {item.name}
+              </ActiveLink>
               ))}
               <button onClick={handleLogOut} className={styles.logout}>
                 Logout

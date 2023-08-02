@@ -10,7 +10,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
-import { FaBars,FaBed,FaCreditCard,FaUserAlt } from "react-icons/fa";
+import { FaBars,FaBed,FaCreditCard,FaUserAlt, FaSuitcaseRolling } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { CiLogout } from "react-icons/ci";
 import { useRouter } from "next/router";
@@ -69,6 +69,11 @@ function ResponsiveDrawer() {
       icon: <FaUserAlt/>
     },
     {
+      name: "Customer",
+      link: "/admin/customer",
+      icon: <FaSuitcaseRolling/>
+    },
+    {
       name: "Room",
       link: "/admin/room",
       link1:"/admin/room/AddRoom",
@@ -83,16 +88,6 @@ function ResponsiveDrawer() {
       link1:"/admin/roomType/AddType",
       link2:"/admin/roomType/UpdateType/[id]",
       icon: <FaBed/>
-    },
-    {
-      name: "Transaction",
-      link: "/admin/transaction",
-      icon: <FaCreditCard/>
-    },
-    {
-      name: "Booking",
-      link: "/admin/book",
-      icon: <BsCalendarPlusFill/>
     },
   ];
 

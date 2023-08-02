@@ -325,3 +325,112 @@ exports.deleteUser = async (request, response) => {
       });
     });
 };
+
+exports.findAllCustomer = async (request, response) =>{
+  let user = await userModel.findAll({where:{role:"customer"}});
+  if (user.length === 0) {
+    return response.status(400).json({
+      success: false,
+      message: "nothing user to show",
+    });
+  } else {
+    return response.json({
+      success: true,
+      data: user,
+      message: `All User have been loaded`,
+    });
+}
+}
+
+exports.findAllExcCustomer = async (request, response) =>{
+  let user = await userModel.findAll({where: {
+    [Op.not]: [{ role:"customer"  }],
+  }});
+  if (user.length === 0) {
+    return response.status(400).json({
+      success: false,
+      message: "nothing user to show",
+    });
+  } else {
+    return response.json({
+      success: true,
+      data: user,
+      message: `All User have been loaded`,
+    });
+}
+}
+
+exports.RegisterCustomer = (request, response) => {
+  upload(request, response, async (error) => {
+    if (error) {
+      return response.status(400).json({ message: error });
+    }
+    if (!request.file) {
+      return response.status(400).json({ message: `harap mengupload foto dan pastikan semua sudah terisi` });
+    }
+
+    
+    let newUser = {
+      nama_user: request.body.nama_user,
+      foto: request.file.filename,
+      email: request.body.email,
+      password: md5(request.body.password),
+      role: "customer",
+    };
+
+    let user = await userModel.findAll({
+      where: {
+        [Op.or]: [{ nama_user: newUser.nama_user }, { email: newUser.email }],
+      },
+    });
+
+    if (
+      newUser.nama_user === "" ||
+      newUser.email === "" ||
+      newUser.password === "" 
+    ) {
+      //karena gagal hapus foto yang masuk
+      const oldFotoUser = newUser.foto;
+      const patchFoto = path.join(__dirname, `../foto_user`, oldFotoUser);
+      if (fs.existsSync(patchFoto)) {
+        fs.unlink(patchFoto, (error) => console.log(error));
+      }
+
+      return response.status(400).json({
+        success: false,
+        message: "Harus diisi semua",
+      });
+    } else {
+      //nama dan email tidak boleh sama
+      if (user.length > 0) {
+        //karena gagal hapus foto yang masuk
+        const oldFotoUser = newUser.foto;
+        const patchFoto = path.join(__dirname, `../foto_user`, oldFotoUser);
+        if (fs.existsSync(patchFoto)) {
+          fs.unlink(patchFoto, (error) => console.log(error));
+        }
+        return response.status(400).json({
+          success: false,
+          message: "Cari nama atau email lain",
+        });
+      } else {
+        console.log(newUser);
+        userModel
+        .create(newUser)
+        .then((result) => {
+          return response.json({
+            success: true,
+            data: result,
+              message: `New User has been inserted`,
+            });
+          })
+          .catch((error) => {
+            return response.status(400).json({
+              success: false,
+              message: error.message,
+            });
+          });
+      }
+    }
+  });
+};

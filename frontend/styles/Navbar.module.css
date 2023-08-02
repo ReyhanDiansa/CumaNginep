@@ -85,6 +85,10 @@
   margin: auto;
 }
 
+.active{
+  border-bottom: 3px solid #024f79;
+}
+
 @media (min-width: 600px) and (max-width: 1024px) {
   .navbar_logo img {
     object-fit: contain;

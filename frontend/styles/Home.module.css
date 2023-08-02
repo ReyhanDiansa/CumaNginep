@@ -1,6 +1,7 @@
 .income {
   display: flex;
-  margin: 2rem 18rem;
+  justify-content: center;
+  margin-top: 2rem;
   gap: 1rem;
 }
 

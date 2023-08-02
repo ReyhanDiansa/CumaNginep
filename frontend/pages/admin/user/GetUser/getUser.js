@@ -76,7 +76,7 @@ let rev = ReverseMd5({
 
   const getData = async () => {
     try {
-      const item = await axios.get("http://localhost:8000/user/getAll", config);
+      const item = await axios.get("http://localhost:8000/user/findAllExcCustomer", config);
       console.log(item);
       const totalItems = item.data.data.length;
       const totalPages = Math.ceil(totalItems / pageSize);

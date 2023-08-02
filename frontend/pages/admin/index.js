@@ -13,8 +13,8 @@ const index = () => {
   const [dataUser, setDataUser] = useState([]);
   const [dataRoom, setDataRoom] = useState([]);
   const [dataType, setDataType] = useState([]);
-  const [today,setToday]=useState([]);
-  const [InMonth,setInMonth]=useState([])
+  const [today, setToday] = useState([]);
+  const [InMonth, setInMonth] = useState([]);
 
   const getDataUser = async () => {
     try {
@@ -51,8 +51,10 @@ const index = () => {
 
   const getIncomeToday = async () => {
     try {
-      const item = await axios.get("http://localhost:8000/pemesanan/Today", config);
-      console.log(item);
+      const item = await axios.get(
+        "http://localhost:8000/pemesanan/Today",
+        config
+      );
       setToday(item.data.data);
     } catch (er) {
       console.log(er);
@@ -61,7 +63,10 @@ const index = () => {
 
   const getIncomeMonth = async () => {
     try {
-      const item = await axios.get("http://localhost:8000/pemesanan/Month", config);
+      const item = await axios.get(
+        "http://localhost:8000/pemesanan/Month",
+        config
+      );
       console.log(item);
       setInMonth(item.data.data);
     } catch (er) {
@@ -90,28 +95,56 @@ const index = () => {
       </div>
       <div>
         <div className={styles.income}>
-          <div className={styles.today}>
-            <div className={styles.today_title}>
-              <h4>Pemasukan Hari ini</h4>
-            </div>
-            <div className={styles.today_info}>
-              <div className={styles.today_icon}>
-                <BsCurrencyDollar />
+          {today?.total === "0" || today?.total === undefined ? (
+            <div className={styles.today}>
+              <div className={styles.today_title}>
+                <h4>Pemasukan Hari ini</h4>
               </div>
-              <h1>Rp {today.total === "0"?"0":today.total}</h1>
-            </div>
-          </div>
-          <div className={styles.today}>
-            <div className={styles.today_title}>
-              <h4>Pemasukan Bulan ini</h4>
-            </div>
-            <div className={styles.today_info}>
-              <div className={styles.today_icon}>
-                <BsCurrencyDollar />
+              <div className={styles.today_info}>
+                <div className={styles.today_icon}>
+                  <BsCurrencyDollar />
+                </div>
+                <h1>Rp 0</h1>
               </div>
-              <h1>Rp {InMonth.total === "0" ? "0":InMonth.total}</h1>
             </div>
-          </div>
+          ) : (
+            <div className={styles.today}>
+              <div className={styles.today_title}>
+                <h4>Pemasukan Hari ini</h4>
+              </div>
+              <div className={styles.today_info}>
+                <div className={styles.today_icon}>
+                  <BsCurrencyDollar />
+                </div>
+                <h1>Rp {today.total === "0" ? "0" : today.total}</h1>
+              </div>
+            </div>
+          )}
+          {InMonth?.total === "0" || InMonth?.total === undefined ? (
+            <div className={styles.today}>
+              <div className={styles.today_title}>
+                <h4>Pemasukan Bulan ini</h4>
+              </div>
+              <div className={styles.today_info}>
+                <div className={styles.today_icon}>
+                  <BsCurrencyDollar />
+                </div>
+                <h1>Rp 0</h1>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.today}>
+              <div className={styles.today_title}>
+                <h4>Pemasukan Bulan ini</h4>
+              </div>
+              <div className={styles.today_info}>
+                <div className={styles.today_icon}>
+                  <BsCurrencyDollar />
+                </div>
+                <h1>Rp {InMonth.total === "0" ? "0" : InMonth.total}</h1>
+              </div>
+            </div>
+          )}
         </div>
         <div className={styles.info_jumlah}>
           <div className={styles.user_info}>

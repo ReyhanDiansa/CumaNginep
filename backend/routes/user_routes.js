@@ -17,5 +17,8 @@ app.get("/findOne/:id", auth.authVerify, checkRole(["admin","resepsionis"]),user
 app.post("/",  userController.addUser)
 app.delete("/:id", auth.authVerify, checkRole(["admin"]),userController.deleteUser)
 app.put("/:id", userController.updateUser)
+app.get("/findAllCustomer", userController.findAllCustomer)
+app.get("/findAllExcCustomer", userController.findAllExcCustomer)
+app.post("/RegisterCustomer", userController.RegisterCustomer)
 
 module.exports=app

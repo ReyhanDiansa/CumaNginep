@@ -62,4 +62,18 @@ app.get(
   checkRole(["admin", "resepsionis"]),
   pemesananController.IncomeToday
 );
+
+app.post(
+  "/AddPemesananNew",
+  auth.authVerify,
+  checkRole(["admin", "resepsionis", "customer"]),
+  pemesananController.addPemesananNew
+);
+
+app.post(
+  "/AddPemesananNewManual",
+  auth.authVerify,
+  checkRole(["admin", "resepsionis", "customer"]),
+  pemesananController.addPemesananNewManual
+);
 module.exports = app;

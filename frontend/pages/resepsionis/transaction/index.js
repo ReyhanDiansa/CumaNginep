@@ -25,6 +25,8 @@ export default function index() {
   const [isShow, setIsShow] = useState(false);
   const [error, setError] = useState(false);
   const [keyword, setKeyword] = useState(null);
+  const [keywordCheckIn, setKeywordceckIn] = useState(null);
+  const [keywordName, setKeywordName] = useState(null);
   const [check, setCheck] = useState(false);
 
   const router = useRouter();
@@ -41,20 +43,47 @@ export default function index() {
   const fetchData = async () => {
     try {
       let response;
-      if (keyword === null || keyword === "null") {
+      if (keyword === null && keywordCheckIn === null && keywordName === null) {
         response = await axios.get(
           "http://localhost:8000/pemesanan/getAll",
           config
         );
       } else {
-        response = await axios.post(
-          "http://localhost:8000/pemesanan/findOne",
-          { status: keyword },
-          config
-        );
+        if (
+          keywordCheckIn === null &&
+          keyword !== null &&
+          keywordName === null
+        ) {
+          response = await axios.post(
+            "http://localhost:8000/pemesanan/findOne",
+            { status: keyword },
+            config
+          );
+        } else if (
+          keywordCheckIn !== null &&
+          keyword === null &&
+          keywordName === null
+        ) {
+          response = await axios.post(
+            "http://localhost:8000/pemesanan/findOne",
+            { check_in: keywordCheckIn },
+            config
+          );
+        } else if (
+          keywordCheckIn === null &&
+          keyword === null &&
+          keywordName !== null
+        ) {
+          response = await axios.post(
+            "http://localhost:8000/pemesanan/findOne",
+            { nama_tamu: keywordName },
+            config
+          );
+        }
       }
-      console.log(response);
       let responseData = response.data.data;
+      console.log("response", responseData);
+      setError(false);
       if (!Array.isArray(responseData)) {
         responseData = [responseData]; // Convert to array if it's not already
       }
@@ -65,14 +94,15 @@ export default function index() {
       setData([...responseData]); // Create a new array with spread syntax
     } catch (error) {
       setIsShow(true);
-      setErrorMessage(error.response.data.message);
+      setErrorMessage(error?.response?.data?.message);
       setError(true);
       console.log(error);
     }
   };
   useEffect(() => {
     fetchData();
-  }, [keyword]);
+    console.log("check", keywordName);
+  }, [keyword, keywordCheckIn, keywordName]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -212,7 +242,7 @@ export default function index() {
   };
 
   const filterOption = [
-    { value: "null", label: "All" },
+    { value: null, label: "All" },
     { value: "baru", label: "Baru" },
     { value: "checkin", label: "CheckIn" },
     { value: "checkout", label: "CheckOut" },
@@ -225,9 +255,10 @@ export default function index() {
         { id: id },
         config
       );
-      console.log(fetchData.data.data);
-      setDetail(fetchData.data.data);
+      const data = fetchData.data.data[0];
+      setDetail(data);
       setOpenModal(true);
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -284,6 +315,23 @@ export default function index() {
       maxHeight: "200px",
     }),
   };
+
+  const handleDateChange = (e) => {
+    if (e.target.value === "") {
+      setKeywordceckIn(null);
+    } else {
+      setKeywordceckIn(e.target.value);
+    }
+  };
+
+  const handleChangeName = (e) => {
+    if (e.target.value === "") {
+      setKeywordName(null);
+    } else {
+      setKeywordName(e.target.value);
+    }
+  };
+
   return (
     <>
       <div>
@@ -322,7 +370,12 @@ export default function index() {
                       <td>
                         <span>{key}</span>
                       </td>
-                      <td>: {value}</td>
+                      <td>
+                        :{" "}
+                        {key === "nomor_kamar"
+                          ? detail.nomor_kamar.map((item) => item.nomor_kamar)
+                          : value}
+                      </td>
                     </tr>
                   ))}
               </tbody>
@@ -341,11 +394,33 @@ export default function index() {
         <div className={styles.header}>
           <h1 className={styles.title}>Transaction Data</h1>
           <div className={styles.select_container2}>
-          <Select
-            options={filterOption}
-            onChange={(e) => setKeyword(e.value)}
-            styles={customStyles2}
-          />
+            <div className={styles.select_wrap}>
+              <Select
+                options={filterOption}
+                onChange={(e) => setKeyword(e.value)}
+                styles={customStyles2}
+                placeholder="Select by Status"
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                onChange={(e) => handleChangeName(e)}
+                className={styles.input_name}
+                placeholder="Search by Nama Tamu"
+              />
+            </div>
+          </div>
+          <div className={styles.input_container}>
+            <label for="dateInput" className="date-input-label">
+              Select by Tanggal Check in
+            </label>
+            <input
+              type="date"
+              id="dateInput"
+              onChange={(e) => handleDateChange(e)}
+              className={styles.input_date}
+            />
           </div>
         </div>
         {error ? (
@@ -376,7 +451,9 @@ export default function index() {
                     currentData.map((item, index) => (
                       <tr key={index}>
                         <td>{item?.nama_tamu}</td>
-                        <td>{item?.nomor_kamar}</td>
+                        <td>
+                          {item?.nomor_kamar.map((kamar) => kamar.nomor_kamar)}
+                        </td>
                         <td>{item?.status_pemesanan}</td>
                         <td>
                           {item?.tgl_check_in + " s/d " + item?.tgl_check_out}
@@ -417,13 +494,13 @@ export default function index() {
                               edit
                             </Link>
                           </Button>
-                          <Button
+                          {/* <Button
                             variant="contained"
                             color="error"
                             onClick={() => handleClick(item?.id)}
                           >
                             hapus
-                          </Button>
+                          </Button> */}
                         </td>
                       </tr>
                     ))

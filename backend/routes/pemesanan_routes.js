@@ -20,8 +20,8 @@ app.get(
 );
 app.post(
   "/findOne",
-  auth.authVerify,
-  checkRole(["admin", "resepsionis"]),
+  // auth.authVerify,
+  // checkRole(["admin", "resepsionis"]),
   pemesananController.find
 );
 app.post(
@@ -75,5 +75,40 @@ app.post(
   auth.authVerify,
   checkRole(["admin", "resepsionis", "customer"]),
   pemesananController.addPemesananNewManual
+);
+
+app.post(
+  "/VerifyReservation",
+  auth.authVerify,
+  checkRole(["resepsionis"]),
+  pemesananController.verify
+);
+
+app.post(
+  "/ChangeStatus",
+  auth.authVerify,
+  checkRole(["resepsionis"]),
+  pemesananController.changeStatus
+);
+
+app.post(
+  "/Reservation",
+  // auth.authVerify,
+  // checkRole(["customer"]),
+  pemesananController.Reservation
+);
+
+app.post(
+  "/getUserReservation",
+  // auth.authVerify,
+  // checkRole(["customer"]),
+  pemesananController.getPemesananbyEmail
+);
+
+app.post(
+  "/getUserReservationwDate",
+  // auth.authVerify,
+  // checkRole(["customer"]),
+  pemesananController.getPemesananbyEmailnDate
 );
 module.exports = app;

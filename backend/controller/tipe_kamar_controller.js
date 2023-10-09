@@ -7,6 +7,7 @@ const Op = require(`sequelize`).Op;
 
 const path = require(`path`);
 const fs = require(`fs`);
+const moment = require(`moment`)
 
 const upload = require(`./upload_foto_tipe`).single(`foto`);
 
@@ -41,10 +42,10 @@ exports.findType = async (request, response) => {
 
   let tipe = await tipeModel.findOne({
     where: {
-      [Op.and]: [{ nama_tipe_kamar: { [Op.substring]: name } }],
+      [Op.and]: [{ nama_tipe_kamar: name  }],
     },
   });
-  if (tipe.length === 0) {
+  if (!tipe) {
     return response.json({
       success: false,
       message: "nothing tipe Room to show",
@@ -292,12 +293,25 @@ exports.deleteType = async (request, response) => {
 };
 
 exports.getAvailable = async (request,response)=>{
-  let check_in=request.body.check_in
-  let check_out=request.body.check_out
+  let check_in=request.body.check_in;
+  let check_out=request.body.check_out;
+
+  let checkIn = moment(check_in).format("YYYY-MM-DD");
+  let checkOut = moment(check_out).format("YYYY-MM-DD");
+  console.log(checkIn, "kkkkkkkkkkkkk");
+  
+  if (moment(check_out).isBefore(moment(checkIn))) {
+    return response.json({
+      success: false,
+      data: `invalid date`,
+    });
+  }
 
   const result = await sequelize.query(
-    `SELECT tipe_kamars.nama_tipe_kamar FROM kamars LEFT JOIN tipe_kamars ON kamars.id_tipe_kamar = tipe_kamars.id LEFT JOIN detail_pemesanans ON detail_pemesanans.id_kamar = kamars.id WHERE tipe_kamars.id NOT IN (SELECT id_tipe_kamar from pemesanans JOIN detail_pemesanans on detail_pemesanans.id_pemesanan=pemesanans.id WHERE tgl_akses BETWEEN '${check_in}' AND '${check_out}') GROUP BY tipe_kamars.nama_tipe_kamar ORDER BY tipe_kamars.id DESC`
-  );
+    `SELECT tipe.* , kamar.* FROM kamars AS kamar JOIN tipe_kamars as tipe ON kamar.id_tipe_kamar = tipe.id WHERE kamar.id NOT IN ( SELECT id_kamar FROM detail_pemesanans as dp join pemesanans as p ON p.id = dp.id_pemesanan WHERE p.status_pemesanan != 'checkout' AND dp.tgl_akses BETWEEN '${checkIn}' AND '${checkOut}' ) GROUP BY tipe.id ORDER BY tipe.id DESC;
+  `)
+
+  
   
   if (result[0].length === 0) {
     return response.json({
@@ -310,4 +324,21 @@ exports.getAvailable = async (request,response)=>{
     data: result[0],
     message: `All Transaction have been loaded`,
   });
+}
+
+exports.getTypeLength = async (request, response) =>{
+  try {
+    let tipe = await tipeModel.count();
+    return response.json({
+      success:true,
+      jumlah_tipe:tipe
+    })
+  }
+  catch(error){
+    console.log(error);
+    return response.json({
+      success:false,
+      message:error
+    })
+  }
 }

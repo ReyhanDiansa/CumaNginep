@@ -20,5 +20,8 @@ app.put("/:id", userController.updateUser)
 app.get("/findAllCustomer", userController.findAllCustomer)
 app.get("/findAllExcCustomer", userController.findAllExcCustomer)
 app.post("/RegisterCustomer", userController.RegisterCustomer)
+app.post("/RegisterLoginCustomer", userController.LoginRegister)
+app.get("/getUserCount", userController.getUserLength)
+
 
 module.exports=app

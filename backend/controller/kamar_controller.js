@@ -317,13 +317,18 @@ exports.availableRoomWithType = async (request,response)=>{
   let tgl2 = moment(tgl_akses_dua).format("YYYY-MM-DD");
 
   const result = await sequelize.query(
-    `SELECT tipe_kamars.nama_tipe_kamar, kamars.nomor_kamar FROM kamars LEFT JOIN tipe_kamars ON kamars.id_tipe_kamar = tipe_kamars.id LEFT JOIN detail_pemesanans ON detail_pemesanans.id_kamar = kamars.id WHERE tipe_kamars.nama_tipe_kamar='${nama_tipe}' AND kamars.id NOT IN (SELECT id_kamar from detail_pemesanans WHERE tgl_akses BETWEEN '${tgl1}' AND '${tgl2}') GROUP BY kamars.nomor_kamar`
+    `SELECT tipe.nama_tipe_kamar, kamar.nomor_kamar
+      FROM kamars  as kamar JOIN tipe_kamars as tipe ON kamar.id_tipe_kamar = tipe.id
+      WHERE tipe.nama_tipe_kamar='${nama_tipe}' AND kamar.id NOT IN ( SELECT id_kamar FROM detail_pemesanans as dp join pemesanans as p ON p.id = dp.id_pemesanan WHERE p.status_pemesanan != 'checkout' AND dp.tgl_akses BETWEEN "${tgl1}" AND "${tgl2}" ) GROUP BY kamar.id ORDER BY kamar.id DESC `
   );
+
+  
 
   if (result[0].length === 0) {
     return response.json({
       success: false,
       data: `nothing type room available`,
+      sisa_kamar: 0
     });
   }
 
@@ -333,4 +338,21 @@ exports.availableRoomWithType = async (request,response)=>{
     data: result[0],
     message: `Room have been loaded`
   });
+}
+
+exports.getRoomLength = async (request, response) =>{
+  try {
+    let room = await roomModel.count();
+    return response.json({
+      success:true,
+      jumlah_kamar:room
+    })
+  }
+  catch(error){
+    console.log(error);
+    return response.json({
+      success:false,
+      message:error
+    })
+  }
 }

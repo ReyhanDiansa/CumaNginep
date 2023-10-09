@@ -29,13 +29,13 @@ exports.login = async (request, response) => {
     const findUser = await userModel.findOne({ where: params });
     if (findUser == null) {
       return response.status(400).json({
-        message: "email or password doesn't match"
+        message: "email or password doesn't match",
       });
     }
     console.log(findUser);
     //generate jwt token
     let tokenPayLoad = {
-      id_user: findUser.id_user,
+      id_user: findUser.id,
       email: findUser.email,
       role: findUser.role,
       nama_user: findUser.nama_user,
@@ -115,10 +115,11 @@ exports.addUser = (request, response) => {
       return response.status(400).json({ message: error });
     }
     if (!request.file) {
-      return response.status(400).json({ message: `harap mengupload foto dan pastikan semua sudah terisi` });
+      return response.status(400).json({
+        message: `harap mengupload foto dan pastikan semua sudah terisi`,
+      });
     }
 
-    
     let newUser = {
       nama_user: request.body.nama_user,
       foto: request.file.filename,
@@ -166,11 +167,11 @@ exports.addUser = (request, response) => {
       } else {
         console.log(newUser);
         userModel
-        .create(newUser)
-        .then((result) => {
-          return response.json({
-            success: true,
-            data: result,
+          .create(newUser)
+          .then((result) => {
+            return response.json({
+              success: true,
+              data: result,
               message: `New User has been inserted`,
             });
           })
@@ -212,7 +213,7 @@ exports.updateUser = (request, response) => {
       email: request.body.email,
       password: md5(request.body.password),
       role: request.body.role,
-      foto:getId.foto
+      foto: getId.foto,
     };
 
     if (request.file) {
@@ -326,8 +327,8 @@ exports.deleteUser = async (request, response) => {
     });
 };
 
-exports.findAllCustomer = async (request, response) =>{
-  let user = await userModel.findAll({where:{role:"customer"}});
+exports.findAllCustomer = async (request, response) => {
+  let user = await userModel.findAll({ where: { role: "customer" } });
   if (user.length === 0) {
     return response.status(400).json({
       success: false,
@@ -339,13 +340,15 @@ exports.findAllCustomer = async (request, response) =>{
       data: user,
       message: `All User have been loaded`,
     });
-}
-}
+  }
+};
 
-exports.findAllExcCustomer = async (request, response) =>{
-  let user = await userModel.findAll({where: {
-    [Op.not]: [{ role:"customer"  }],
-  }});
+exports.findAllExcCustomer = async (request, response) => {
+  let user = await userModel.findAll({
+    where: {
+      [Op.not]: [{ role: "customer" }],
+    },
+  });
   if (user.length === 0) {
     return response.status(400).json({
       success: false,
@@ -357,8 +360,8 @@ exports.findAllExcCustomer = async (request, response) =>{
       data: user,
       message: `All User have been loaded`,
     });
-}
-}
+  }
+};
 
 exports.RegisterCustomer = (request, response) => {
   upload(request, response, async (error) => {
@@ -366,10 +369,11 @@ exports.RegisterCustomer = (request, response) => {
       return response.status(400).json({ message: error });
     }
     if (!request.file) {
-      return response.status(400).json({ message: `harap mengupload foto dan pastikan semua sudah terisi` });
+      return response.status(400).json({
+        message: `harap mengupload foto dan pastikan semua sudah terisi`,
+      });
     }
 
-    
     let newUser = {
       nama_user: request.body.nama_user,
       foto: request.file.filename,
@@ -387,7 +391,7 @@ exports.RegisterCustomer = (request, response) => {
     if (
       newUser.nama_user === "" ||
       newUser.email === "" ||
-      newUser.password === "" 
+      newUser.password === ""
     ) {
       //karena gagal hapus foto yang masuk
       const oldFotoUser = newUser.foto;
@@ -416,11 +420,11 @@ exports.RegisterCustomer = (request, response) => {
       } else {
         console.log(newUser);
         userModel
-        .create(newUser)
-        .then((result) => {
-          return response.json({
-            success: true,
-            data: result,
+          .create(newUser)
+          .then((result) => {
+            return response.json({
+              success: true,
+              data: result,
               message: `New User has been inserted`,
             });
           })
@@ -433,4 +437,74 @@ exports.RegisterCustomer = (request, response) => {
       }
     }
   });
+};
+
+exports.LoginRegister = async (request, response) => {
+  const email = request.body.email;
+  let user = await userModel.findAll({
+    where: { role: "customer", email: email },
+  });
+  if (user.length === 0) {
+    let newUser = {
+      nama_user: request.body.nama_user,
+      foto: request.body.linkFoto,
+      email: email,
+      role: "customer",
+    };
+
+    if (newUser.nama_user === "" || newUser.email === "") {
+      return response.status(400).json({
+        success: false,
+        message: "Harus diisi semua",
+      });
+    } else {
+      userModel
+        .create(newUser)
+        .then((result) => {
+          return response.json({
+            success: true,
+            data: result,
+            message: `New User has been inserted`,
+          });
+        })
+        .catch((error) => {
+          return response.status(400).json({
+            success: false,
+            message: error.message,
+          });
+        });
+    }
+  } else {
+    return response.json({
+      success: true,
+      data: user,
+      message: `User sudah ada dan berhasil login`,
+    });
+  }
+};
+
+exports.getUserLength = async (request, response) => {
+  try {
+    let userExc = await userModel.count({
+      where: {
+        [Op.not]: [{ role: "customer" }],
+      },
+    });
+    let userCus = await userModel.count({
+      where: {
+        [Op.and]: [{ role: "customer" }],
+      },
+    });
+    console.log(userExc, "ll");
+    return response.json({
+      status:true,
+      userExc,
+      userCus
+    })
+  } catch (error) {
+    return response.json({
+      status:false,
+      message:error
+    })
+  }
 };

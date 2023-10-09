@@ -19,8 +19,6 @@ app.get(
 );
 app.post(
   "/findOne",
-  auth.authVerify,
-  checkRole(['admin', 'resepsionis']),
   tipeController.findType
 );
 
@@ -45,6 +43,6 @@ app.put(
   tipeController.updateType
 );
 
-app.post("/getAvailableTypeRoom",auth.authVerify,
-checkRole(["admin","resepsionis"]),tipeController.getAvailable)
+app.post("/getAvailableTypeRoom", tipeController.getAvailable)
+app.get("/getTypeCount", tipeController.getTypeLength)
 module.exports = app;

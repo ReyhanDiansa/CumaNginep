@@ -26,8 +26,6 @@ app.post(
 );
 app.post(
   "/getAvailableWType",
-  auth.authVerify,
-  checkRole(['admin', 'resepsionis']),
   roomController.availableRoomWithType
 );
 
@@ -64,5 +62,6 @@ app.put(
   checkRole(["admin"]),
   roomController.updateRoom
 );
+app.get("/getRoomCount", roomController.getRoomLength)
 
 module.exports = app;

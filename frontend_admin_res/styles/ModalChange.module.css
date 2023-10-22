@@ -1,0 +1,47 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  
+  .dialog {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .message {
+    font-size: 18px;
+    margin: 0 0 10px 0;
+  }
+
+  .title_modal{
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .icon_close{
+    cursor: pointer;
+  }
+
+  .select_containerModal{
+    margin: 1rem 0 ;
+  }
+
+  .save_button{
+    padding: 7px 15px;
+    background-color: #024f79;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }

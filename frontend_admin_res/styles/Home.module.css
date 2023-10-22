@@ -1,0 +1,74 @@
+.income {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.today {
+  background-color: #024f79;
+  padding: 1rem 2rem;
+  color: white;
+  border-radius: 5px;
+  box-shadow: 5px 8px 8px #888888;
+}
+
+.today_title {
+  margin-left: 6px;
+}
+
+.today_info {
+  display: flex;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.today_info h1 {
+  margin-top: 4px;
+}
+
+.today_icon {
+  font-size: 3rem;
+}
+
+.info_jumlah {
+  display: flex;
+  margin: 4rem 14rem;
+  gap: 4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.user_info {
+  background-color: #024f79;
+  /* padding: 1rem 5rem 10px 1rem; */
+  width: 15rem;
+  padding-top: 1rem;
+  padding-left: 1rem;
+  color: white;
+  border-radius: 5px;
+  box-shadow: 5px 8px 8px #888888;
+}
+
+.user_title{
+margin-left: 6px;
+}
+
+.user_detail{
+  display: flex;
+  gap: 1rem;
+}
+
+.user_detail h2{
+  margin-top: 10px;
+}
+
+.user_icon{
+  font-size: 3rem;
+
+}
+
+.type_icon{
+  font-size: 3rem;
+  margin-left: 5px;
+}

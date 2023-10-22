@@ -1,0 +1,58 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  
+  .dialog {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .message {
+    font-size: 18px;
+    margin: 0 0 10px 0;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 2rem;
+  }
+  
+  .confirmButton {
+    background-color: green;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .cancelButton {
+    background-color: white;
+    border: 2px solid rgb(156, 23, 23);
+    color: rgb(156, 23, 23);
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .rejectButton{
+    background-color: red;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
